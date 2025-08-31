@@ -2,6 +2,12 @@
 
 A simple Streamlit app that classifies your expenses into categories from a short “note” and amount, then shows a dashboard of your spending.
 
+
+
+https://github.com/user-attachments/assets/1877108c-5d43-40a1-ab74-9c1ba76e838c
+
+
+
 ## Features
 - Add & Classify: enter note and amount; date is captured automatically.
 - ML classification: TF‑IDF on note + date features + amount fed into Logistic Regression.
