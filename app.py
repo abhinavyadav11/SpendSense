@@ -8,11 +8,11 @@ import os
 
 st.set_page_config(page_title="SpendSense", page_icon="💸", layout="wide")
 
-# Paths (relative to project root)
+
 MODEL_PATH = Path("/Users/abhinavyadav/Projects/SpendSense/Data/models/spendsense_clf.pkl")
 DATA_PATH = Path("/Users/abhinavyadav/Projects/SpendSense/Data/transactions.csv")
 
-# Make this available for unpickling the saved sklearn pipeline
+
 def extract_date_features(d):
     s = pd.to_datetime(d.iloc[:, 0])
     return pd.DataFrame({
@@ -32,7 +32,7 @@ def load_user_data():
     expected_cols = ["note", "amount", "date", "predicted_category"]
     if DATA_PATH.exists():
         df = pd.read_csv(DATA_PATH, parse_dates=["date"])
-        # Validate schema
+        
         if not set(expected_cols).issubset(df.columns):
             return pd.DataFrame(columns=expected_cols)
         df = df[expected_cols]
@@ -52,7 +52,6 @@ def render_add_and_classify(model):
     # Inputs
     note = st.text_input("Note", placeholder="e.g., Chai tapri, Uber ride, Paid rent")
 
-    # Amount starts blank and must be numeric
     amount_str = st.text_input("Amount (₹)", placeholder="e.g., 199.99")
     amount = None
     amount_valid = False
@@ -90,7 +89,7 @@ def render_add_and_classify(model):
             for j in idx:
                 st.write(f"- {labels[j]}: {proba[j]:.2f}")
 
-            # Save row safely with correct schema
+            # Save row 
             save_it = st.checkbox("Save this transaction", value=True)
             if save_it:
                 df = load_user_data().copy()
@@ -114,17 +113,16 @@ def render_dashboard():
         st.info("No saved transactions yet. Add one in 'Add & Classify'.")
         return
 
-    # Ensure correct dtypes
     df["amount"] = pd.to_numeric(df["amount"], errors="coerce").fillna(0)
     if not pd.api.types.is_datetime64_any_dtype(df["date"]):
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
-    # Filters
+
     colf1, colf2 = st.columns(2)
     with colf1:
         min_d = df["date"].min()
         max_d = df["date"].max()
-        # Handle missing/NaT dates gracefully
+
         if pd.isna(min_d) or pd.isna(max_d):
             date_range = st.date_input("Date range", (datetime.now().date(), datetime.now().date()))
         else:
@@ -179,7 +177,6 @@ def render_dashboard():
     st.subheader("Recent Transactions")
     st.dataframe(fdf.sort_values("date", ascending=False).head(50), use_container_width=True)
 
-# Sidebar navigation
 model = load_model()
 st.sidebar.title("SpendSense")
 page = st.sidebar.radio("Navigate", ["Add & Classify", "Dashboard"])
